@@ -1,0 +1,14 @@
+services:
+  tg-bot-api:
+    image: aiogram/telegram-bot-api:9.2
+    container_name: tg-bot-api
+    env_file: .env
+    volumes:
+      - telegram-bot-api-data:/var/lib/telegram-bot-api
+    ports:
+      - "8081:8081"
+      - "8082:8082"
+
+volumes:
+  telegram-bot-api-data:
+    name: telegram-bot-api-data

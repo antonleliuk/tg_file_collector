@@ -1,0 +1,71 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# IntelliJ IDEA specific files and directories
+#.idea/
+*.iws
+*.iml
+*.ipr
+
+# User-specific files
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/dictionaries/
+.idea/shelf/
+.idea/copilot.data.*.xml
+
+# Generated files
+.idea/libraries/
+.idea/modules.xml
+.idea/.name
+.idea/gradle.xml
+
+
+# Exclude workspace storage, settings, and caches
+workspace.xml
+tasks.xml
+dictionaries/
+shelf/
+
+# Plugin-specific files
+/.idea/**/assets/*
+/.idea/**/dependencies.xml
+/.idea/**/libraries
+/.idea/dataSources.xml
+/.idea/compiler.xml
+/.idea/misc.xml
+
+# Logs and coverage reports
+.idea/**/testResults/
+/.idea/**/coverages/
+.idea/**/out/
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+
+# Ignore application-local.properties
+application-local.properties
+.env
