@@ -1,0 +1,13 @@
+version: 2
+updates:
+  # Keep dependencies in the Maven project up to date
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "daily"
+
+  # Keep the Dockerfile base image up to date
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
