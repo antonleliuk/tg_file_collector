@@ -4,6 +4,10 @@ on:
   push:
     branches: [ "main" ]
 
+  pull_request:
+    branches:
+      - main
+
 jobs:
 
   build:
@@ -15,13 +19,87 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Build the Docker image
+    - name: Set up JDK 25
+      uses: actions/setup-java@v5.1.0
+      with:
+        java-version: '25.0.1'
+        distribution: 'temurin'
+        cache: maven
+    - name: Extract project version
       run: |
-        docker build . \
-          --label "org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}" \
-          --label "org.opencontainers.image.description=Automated Telegram attachment downloader and local storage manager." \
-          --label "org.opencontainers.image.revision=${{ github.sha }}" \
-          --label "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
-          --label "org.opencontainers.image.licenses=MIT" \
-          --label "org.opencontainers.image.title=TGFileCollector" \
-          --tag ghcr.io/antonleliuk/tg_file_collector:$(date +%s)
+        echo "Extracting version from pom.xml"
+        chmod +x ./mvnw
+        VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)
+        echo "PROJECT_VERSION=$VERSION" >> $GITHUB_ENV
+    - name: Generate git.properties and label args
+      run: |
+        echo "Generating git.properties via git-commit-id-maven-plugin"
+        ./mvnw -q -DskipTests git-commit-id:revision
+        if [ -f target/classes/git.properties ]; then
+          echo "git.properties generated:"
+          cat target/classes/git.properties
+          # Create a temporary file to store label arguments
+          echo "" > /tmp/docker_labels.txt
+          while IFS='=' read -r key value; do
+            # skip empty keys and comments
+            if [ -z "$key" ] || [ "${key#\#}" != "$key" ]; then
+              continue
+            fi
+            val="${value//$'\r'/}"
+            # escape backslashes and quotes in value
+            val="${val//\\/\\\\}"
+            val="${val//\"/\\\"}"
+            echo "--label" >> /tmp/docker_labels.txt
+            echo "${key}=${val}" >> /tmp/docker_labels.txt
+          done < target/classes/git.properties
+          echo "Label arguments prepared in /tmp/docker_labels.txt"
+        else
+          echo "git.properties not found; continuing without labels"
+          touch /tmp/docker_labels.txt
+        fi
+    - name: Build image
+      run: |
+        # Build command as array - this properly handles buildx
+        BUILD_CMD=(docker build)
+
+        # Add labels if file exists and has content
+        if [ -s /tmp/docker_labels.txt ]; then
+        while IFS= read -r line; do
+        if [ -n "$line" ]; then
+        BUILD_CMD+=("$line")
+        fi
+        done < /tmp/docker_labels.txt
+        fi
+
+        # Add labels
+        BUILD_CMD+=(--label "org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}")
+        BUILD_CMD+=(--label "org.opencontainers.image.description=Automated Telegram attachment downloader and local storage manager.")
+        BUILD_CMD+=(--label "org.opencontainers.image.revision=${{ github.sha }}")
+        BUILD_CMD+=(--label "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')")
+        BUILD_CMD+=(--label "org.opencontainers.image.licenses=MIT")
+        BUILD_CMD+=(--label "org.opencontainers.image.title=TGFileCollector")
+        
+        # Add tags
+        BUILD_CMD+=(-t "${{github.repository}}/${{ github.repository_id }}:$PROJECT_VERSION")
+        BUILD_CMD+=(-t "${{github.repository}}/${{ github.repository_id }}:latest")
+
+        # Add build context as the last argument
+        BUILD_CMD+=(.)
+
+        # Print and execute
+        echo "Executing command:"
+        printf '%q ' "${BUILD_CMD[@]}"
+        echo
+
+        "${BUILD_CMD[@]}"
+
+    - name: Login to the registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GH_PAT }}
+
+    - name: Push image
+      run: |
+        docker push ${{ github.repository }}/${{ github.repository_id }}:${PROJECT_VERSION}
