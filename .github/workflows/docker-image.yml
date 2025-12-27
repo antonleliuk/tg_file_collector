@@ -80,8 +80,8 @@ jobs:
         BUILD_CMD+=(--label "org.opencontainers.image.title=TGFileCollector")
         
         # Add tags
-        BUILD_CMD+=(-t "ghcr.io/${{github.repository}}/${{ github.repository_id }}:$PROJECT_VERSION")
-        BUILD_CMD+=(-t "ghcr.io/${{github.repository}}/${{ github.repository_id }}:latest")
+        BUILD_CMD+=(-t "ghcr.io/${{github.repository}}:$PROJECT_VERSION")
+        BUILD_CMD+=(-t "ghcr.io/${{github.repository}}:latest")
 
         # Add build context as the last argument
         BUILD_CMD+=(.)
@@ -102,4 +102,4 @@ jobs:
 
     - name: Push image
       run: |
-        docker push ghcr.io/${{ github.repository }}/${{ github.repository_id }}:${PROJECT_VERSION}
+        docker push ghcr.io/${{ github.repository }}:${PROJECT_VERSION}
