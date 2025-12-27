@@ -13,14 +13,14 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Stage: Extract layers
-FROM eclipse-temurin:25-jre-alpine-3.21 AS layers
+FROM eclipse-temurin:25-jre-alpine-3.23 AS layers
 WORKDIR /app
 
 COPY --from=build /app/target/*.jar application.jar
 RUN java -Djarmode=tools -jar application.jar extract --layers --destination extracted
 
 # Stage: Runtime Stage
-FROM eclipse-temurin:25-jre-alpine-3.21
+FROM eclipse-temurin:25-jre-alpine-3.23
 WORKDIR /app
 
 # Add a non-root user for better security
