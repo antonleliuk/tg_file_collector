@@ -16,10 +16,50 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "telegrambots")
 public class TelegramProperties {
 
-    private String token;
+    private boolean enabled;
 
-    private Set<String> allowedUsers;
+    @NestedConfigurationProperty
+    private Security security = new Security();
+
+    @NestedConfigurationProperty
+    private HttpClient httpClient = new HttpClient();
 
     @NestedConfigurationProperty
     private TelegramUrl telegramUrl;
+
+    @NestedConfigurationProperty
+    private StorageProperties storage;
+
+    @Getter
+    @Setter
+    public static class Security {
+        private String token;
+
+        private Set<String> allowedUsers;
+    }
+
+    @Getter
+    @Setter
+    public static class HttpClient {
+        private int connectTimeout = 10000;
+
+        private int readTimeout = 60000;
+
+        private int writeTimeout = 10000;
+    }
+
+    @Getter
+    @Setter
+    public static class StorageProperties {
+
+        /**
+         * Destination directory for stored files
+         */
+        private String rootDir;
+
+        /**
+         * Destination directory for stored files from telegram
+         */
+        private String telegramRootDir;
+    }
 }

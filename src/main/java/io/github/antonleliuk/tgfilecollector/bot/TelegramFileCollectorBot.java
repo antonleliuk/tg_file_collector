@@ -16,7 +16,7 @@ public class TelegramFileCollectorBot implements SpringLongPollingBot {
 
     @Override
     public String getBotToken() {
-        return telegramProperties.getToken();
+        return telegramProperties.getSecurity().getToken();
     }
 
     @Override

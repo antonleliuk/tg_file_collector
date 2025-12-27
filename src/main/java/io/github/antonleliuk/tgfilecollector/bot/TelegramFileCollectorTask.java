@@ -1,6 +1,5 @@
 package io.github.antonleliuk.tgfilecollector.bot;
 
-import java.io.IOException;
 import jakarta.annotation.Nullable;
 
 import org.telegram.telegrambots.meta.api.methods.GetFile;
@@ -8,7 +7,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
-import io.github.antonleliuk.tgfilecollector.conf.TelegramProperties;
+import io.github.antonleliuk.tgfilecollector.service.SecurityService;
+import io.github.antonleliuk.tgfilecollector.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,10 @@ public class TelegramFileCollectorTask implements Runnable {
 
     private final Update update;
     private final TelegramClient client;
-    private final TelegramProperties  telegramProperties;
+
+    private final SecurityService securityService;
+
+    private final StorageService storageService;
 
     @SneakyThrows
     @Override
@@ -27,25 +30,28 @@ public class TelegramFileCollectorTask implements Runnable {
         log.info("Processing update: {}", update.getUpdateId());
         var message = update.getMessage();
         if (update.hasMessage()) {
-            if (telegramProperties.getAllowedUsers().contains(message.getFrom().getUserName())) {
-                if (message.hasDocument()) {
+            if (securityService.isAllowed(update.getMessage())) {
+                if (message.hasText() && "/start".equals(message.getText())) {
+                    log.info("Sending start message for update: {}", update.getUpdateId());
+                    String firstName = message.getFrom().getFirstName();
+                    String lastName = message.getFrom().getLastName();
+                    String fullName = firstName + (lastName != null ? " " + lastName : "");
+                    sendMessage(message.getChatId(), message.getMessageThreadId(), "Welcome, " + fullName + "! Send me any file, and I will save it for you.");
+                } else if (message.hasDocument()) {
                     log.info("Downloading document: {}, for update: {}", message.getDocument(), update.getUpdateId());
+                    sendMessage(message.getChatId(), message.getMessageThreadId(), "Start saving file.");
                     var document = message.getDocument();
                     String fileId = document.getFileId();
 
                     client.executeAsync(new GetFile(fileId))
-                            .thenCompose(file -> {
-                                log.info("Downloading file: {}, for update: {}", file.getFileId(), update.getUpdateId());
-                                return client.downloadFileAsync(file);
-                            })
                             .thenAccept(file -> {
                                 try {
                                     String fileName = document.getFileName();
 
-                                    log.info("Saving file: {}, for update: {}", file, update.getUpdateId());
-//                                    Path target = Paths.get(fileName);
-//                                    Files.copy(is, target, StandardCopyOption.REPLACE_EXISTING);
-//                                    log.info("File saved to: {}", target.toAbsolutePath());
+                                    log.info("Saving file for update: {}", update.getUpdateId());
+                                    // TODO check for virus??
+                                    var saved = storageService.save(file.getFilePath(), fileName);
+                                    log.info("File saved to: {} for update: {}", saved, update.getUpdateId());
                                     sendMessage(message.getChatId(), message.getMessageThreadId(), "File saved successfully.");
                                 } catch (Exception e) {
                                     throw new RuntimeException(e);

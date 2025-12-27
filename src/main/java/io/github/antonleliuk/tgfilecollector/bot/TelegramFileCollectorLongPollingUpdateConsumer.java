@@ -10,6 +10,8 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
 
 import io.github.antonleliuk.tgfilecollector.conf.TelegramProperties;
+import io.github.antonleliuk.tgfilecollector.service.SecurityService;
+import io.github.antonleliuk.tgfilecollector.service.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,11 +23,12 @@ public class TelegramFileCollectorLongPollingUpdateConsumer implements LongPolli
     private final Executor executor = Executors.newVirtualThreadPerTaskExecutor();
 
     private final TelegramClient telegramClient;
-    private final TelegramProperties telegramProperties;
+    private final SecurityService securityService;
+    private final StorageService storageService;
 
     @Override
     public void consume(List<Update> updates) {
         log.info("Received updates: {}", updates);
-        updates.forEach(update -> executor.execute(new TelegramFileCollectorTask(update, telegramClient, telegramProperties)));
+        updates.forEach(update -> executor.execute(new TelegramFileCollectorTask(update, telegramClient, securityService, storageService)));
     }
 }
