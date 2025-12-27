@@ -1,0 +1,26 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . \
+        --label "org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}" \
+        --label "org.opencontainers.image.description=Automated Telegram attachment downloader and local storage manager." \
+        --label "org.opencontainers.image.revision=${{ github.sha }}" \
+        --label "org.opencontainers.image.created=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+        --label "org.opencontainers.image.licenses=MIT" \
+        --label "org.opencontainers.image.title=TGFileCollector" \
+        --tag ghcr.io/antonleliuk/tg_file_collector:$(date +%s)
