@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  namespace: tg-file-collector
+  name: local-tg-file-collector-pv
+  labels:
+    app: tg-file-collector
+    storage: tg-file-collector
+    type: local
+spec:
+  capacity:
+    storage: 10Gi  # Adjust based on your NVMe storage
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: local-tg-file-collector-storage
+  local:
+    path: /data/tg_file_collector
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: with-storage  # Label for the storage node
+              operator: In
+              values:
+                - "true"

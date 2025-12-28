@@ -1,0 +1,21 @@
+{{- if .Values.telegramBotApi.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "tg_file_collector.fullname" . }}-api
+  labels:
+    {{- include "tg_file_collector.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: 8081
+      targetPort: api
+      protocol: TCP
+      name: api
+    - port: 8082
+      targetPort: stat
+      protocol: TCP
+      name: stat
+  selector:
+    {{- include "tg_file_collector.selectorLabels" . | nindent 4 }}
+{{- end }}

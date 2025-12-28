@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "tg_file_collector.fullname" . }}-test-connection"
+  labels:
+    {{- include "tg_file_collector.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "tg_file_collector.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never
