@@ -1,0 +1,39 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  CHART_NAME: tg_file_collector
+
+jobs:
+  deploy-helm:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+
+      - name: Package and Push Helm Chart
+        run: |
+          # Lowercase the owner name for GHCR
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          
+          # Extract version from Chart.yaml
+          VERSION=$(grep '^version:' helm/Chart.yaml | awk '{print $2}')
+          
+          helm package helm
+          helm push ${CHART_NAME}-${VERSION}.tgz oci://${REGISTRY}/${OWNER}/charts
