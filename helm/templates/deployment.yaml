@@ -53,7 +53,7 @@ spec:
                   key: TELEGRAM_API_HASH
           ports:
             - name: api
-              containerPort: 8081
+              containerPort: {{ .Values.config.telegrambots.telegramUrl.port }}
               protocol: TCP
             - name: stat
               containerPort: 8082
@@ -65,7 +65,7 @@ spec:
               mountPath: /var/lib/telegram-bot-api
         - name: wait-for-api
           image: busybox:1.28
-          command: ['sh', '-c', 'until nc -zv {{ include "tg-file-collector.fullname" . }}-api 8081; do echo waiting for telegram-bot-api; sleep 2; done']
+          command: ['sh', '-c', 'until nc -zv {{ .Values.config.telegrambots.telegramUrl.host }} {{ .Values.config.telegrambots.telegramUrl.port }}; do echo waiting for telegram-bot-api; sleep 2; done']
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -86,7 +86,7 @@ spec:
             - name: TELEGRAMBOTS_TELEGRAM_URL_SCHEMA
               value: {{ .Values.config.telegrambots.telegramUrl.schema | quote }}
             - name: TELEGRAMBOTS_TELEGRAM_URL_HOST
-              value: {{ tpl .Values.config.telegrambots.telegramUrl.host . | quote }}
+              value: {{ if .Values.telegramBotApi.enabled }}"localhost"{{ else }}{{ tpl .Values.config.telegrambots.telegramUrl.host . | quote }}{{ end }}
             - name: TELEGRAMBOTS_TELEGRAM_URL_PORT
               value: {{ .Values.config.telegrambots.telegramUrl.port | quote }}
             - name: TELEGRAMBOTS_TELEGRAM_URL_TEST_SERVER
