@@ -42,10 +42,7 @@ config:
       telegramRootDir: "/var/lib/telegram-bot-api"
 
 persistence:
-  enabled: true
-  size: 10Gi
-  storageClassName: "local-tg-file-collector-storage"
-  accessMode: ReadWriteMany
+  existingClaim: "local-family-files-pvc"
 
 imagePullSecrets: []
 nameOverride: ""

@@ -60,10 +60,11 @@ config:
 
 ### GitHub Actions (CI/CD)
 
-The project includes a GitHub Actions workflow that automatically:
-1. Builds the Spring Boot application.
-2. Builds and pushes the Docker image to GitHub Container Registry (GHCR).
-3. Packages and pushes the Helm chart to GHCR as an OCI artifact.
+The project includes several GitHub Actions workflows that automatically:
+1. **Linting**: Checks `Dockerfile`, Helm charts.
+2. **Maven CI**: Builds the Spring Boot application and runs tests.
+3. **Docker Build**: Builds and pushes the Docker image to GitHub Container Registry (GHCR).
+4. **Helm Package**: Packages and pushes the Helm chart to GHCR as an OCI artifact.
 
 The workflow is triggered on every push to the `main` branch and when a new tag `v*` is created.
 

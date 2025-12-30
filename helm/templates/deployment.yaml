@@ -114,12 +114,8 @@ spec:
         {{- end }}
       volumes:
         - name: data
-          {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ include "tg-file-collector.fullname" . }}
-          {{- else }}
-          emptyDir: {}
-          {{- end }}
+            claimName: {{ .Values.persistence.existingClaim }}
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
