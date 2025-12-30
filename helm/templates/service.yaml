@@ -8,7 +8,7 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: 8081
+    - port: {{ .Values.config.telegrambots.telegramUrl.port }}
       targetPort: api
       protocol: TCP
       name: api
