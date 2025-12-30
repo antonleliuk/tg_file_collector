@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "tg_file_collector.fullname" . }}
+  name: {{ include "tg-file-collector.fullname" . }}
   labels:
-    {{- include "tg_file_collector.labels" . | nindent 4 }}
+    {{- include "tg-file-collector.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "tg_file_collector.fullname" . }}
+    name: {{ include "tg-file-collector.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

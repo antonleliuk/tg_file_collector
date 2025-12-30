@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "tg_file_collector.fullname" . }}
+  name: {{ include "tg-file-collector.fullname" . }}
   labels:
-    {{- include "tg_file_collector.labels" . | nindent 4 }}
+    {{- include "tg-file-collector.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -12,4 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "tg_file_collector.selectorLabels" . | nindent 4 }}
+    {{- include "tg-file-collector.selectorLabels" . | nindent 4 }}

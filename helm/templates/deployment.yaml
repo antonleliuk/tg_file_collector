@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "tg_file_collector.fullname" . }}
+  name: {{ include "tg-file-collector.fullname" . }}
   labels:
-    {{- include "tg_file_collector.labels" . | nindent 4 }}
+    {{- include "tg-file-collector.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "tg_file_collector.selectorLabels" . | nindent 6 }}
+      {{- include "tg-file-collector.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -18,7 +18,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "tg_file_collector.labels" . | nindent 8 }}
+        {{- include "tg-file-collector.labels" . | nindent 8 }}
         {{- with .Values.podLabels }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
@@ -27,14 +27,14 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "tg_file_collector.serviceAccountName" . }}
+      serviceAccountName: {{ include "tg-file-collector.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- if .Values.telegramBotApi.enabled }}
       initContainers:
         - name: wait-for-api
           image: busybox:1.28
-          command: ['sh', '-c', 'until nc -zv {{ include "tg_file_collector.fullname" . }}-api 8081; do echo waiting for telegram-bot-api; sleep 2; done']
+          command: ['sh', '-c', 'until nc -zv {{ include "tg-file-collector.fullname" . }}-api 8081; do echo waiting for telegram-bot-api; sleep 2; done']
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -48,7 +48,7 @@ spec:
             - name: TELEGRAMBOTS_SECURITY_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: {{ default (printf "%s-bot-token" (include "tg_file_collector.fullname" .)) .Values.config.telegrambots.security.existingSecret }}
+                  name: {{ default (printf "%s-bot-token" (include "tg-file-collector.fullname" .)) .Values.config.telegrambots.security.existingSecret }}
                   key: token
             - name: TELEGRAMBOTS_SECURITY_ALLOWED_USERS
               value: {{ .Values.config.telegrambots.security.allowedUsers | quote }}
@@ -92,12 +92,12 @@ spec:
             - name: TELEGRAM_API_ID
               valueFrom:
                 secretKeyRef:
-                  name: {{ default (printf "%s-api-credentials" (include "tg_file_collector.fullname" .)) .Values.telegramBotApi.secret.existingSecret }}
+                  name: {{ default (printf "%s-api-credentials" (include "tg-file-collector.fullname" .)) .Values.telegramBotApi.secret.existingSecret }}
                   key: TELEGRAM_API_ID
             - name: TELEGRAM_API_HASH
               valueFrom:
                 secretKeyRef:
-                  name: {{ default (printf "%s-api-credentials" (include "tg_file_collector.fullname" .)) .Values.telegramBotApi.secret.existingSecret }}
+                  name: {{ default (printf "%s-api-credentials" (include "tg-file-collector.fullname" .)) .Values.telegramBotApi.secret.existingSecret }}
                   key: TELEGRAM_API_HASH
           ports:
             - name: api
@@ -116,7 +116,7 @@ spec:
         - name: data
           {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ include "tg_file_collector.fullname" . }}
+            claimName: {{ include "tg-file-collector.fullname" . }}
           {{- else }}
           emptyDir: {}
           {{- end }}

@@ -8,7 +8,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  CHART_NAME: tg_file_collector
+  CHART_NAME: tg-file-collector
 
 jobs:
   deploy-helm:
