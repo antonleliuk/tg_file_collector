@@ -29,7 +29,7 @@ If you want to create the secret manually:
 kubectl create secret generic tg-file-collector-api-credentials \
   --from-literal=TELEGRAM_API_ID=your_api_id \
   --from-literal=TELEGRAM_API_HASH=your_api_hash \
-  -n tg-file-collector
+  -n family-files-space
 ```
 Then set `telegramBotApi.secret.existingSecret: tg-file-collector-api-credentials` in your `values.yaml`.
 
@@ -40,11 +40,29 @@ If you want to create the secret manually:
 ```bash
 kubectl create secret generic tg-file-collector-bot-token \
   --from-literal=token=your_bot_token \
-  -n tg-file-collector
+  -n family-files-space
 ```
 Then set `config.telegrambots.security.existingSecret: tg-file-collector-bot-token` in your `values.yaml`.
 
-### 3. Telegram Bot API URL
+### 3. Image Pull Secret (GHCR)
+If the Docker image is private (default for GHCR), you need to create an image pull secret.
+
+1. Create a Personal Access Token (PAT) with `read:packages` scope.
+2. Create the secret in your namespace:
+```bash
+kubectl create secret docker-registry ghcr-pull-secret \
+  --docker-server=ghcr.io \
+  --docker-username=your_github_username \
+  --docker-password=your_pat \
+  -n family-files-space
+```
+3. Set `imagePullSecrets` in your `values.yaml`:
+```yaml
+imagePullSecrets:
+  - name: ghcr-pull-secret
+```
+
+### 4. Telegram Bot API URL
 By default, the application is configured to connect to the `telegram-bot-api` sidecar service included in the Helm chart. If you are using an external Telegram Bot API server, you can override the URL settings in your `values.yaml`:
 
 ```yaml
@@ -95,22 +113,23 @@ The workflow is triggered on every push to the `main` branch and when a new tag 
 
 3. Install the chart:
    ```bash
-   helm install tg-file-collector ./helm -f my-values.yaml -n tg-file-collector --create-namespace
+   helm install tg-file-collector ./helm -f my-values.yaml -n family-files-space --create-namespace
    ```
 
 ### Method 2: Installing from GitHub (OCI Registry)
 
 ```bash
 helm install tg-file-collector oci://ghcr.io/antonleliuk/charts/tg-file-collector \
-  --version 0.0.1 \
+  --version 0.0.5 \
   -f my-values.yaml \
-  -n tg-file-collector --create-namespace
+  -n family-files-space --create-namespace
 ```
 
 ## Configuration
 
 | Parameter                                   | Description                                       | Default                           |
 |---------------------------------------------|---------------------------------------------------|-----------------------------------|
+| `imagePullSecrets`                         | List of secrets to pull images from private registries | `[]`                              |
 | `config.telegrambots.security.token`        | Your Telegram Bot Token                           | `""`                              |
 | `config.telegrambots.security.allowedUsers` | Comma-separated list of allowed Telegram user IDs | `""`                              |
 | `telegramBotApi.secret.apiId`               | Telegram API ID                                   | `""`                              |

@@ -99,3 +99,4 @@ jobs:
     - name: Push image
       run: |
         docker push ghcr.io/${{ github.repository }}:${PROJECT_VERSION}
+        docker push ghcr.io/${{ github.repository }}:latest
