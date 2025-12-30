@@ -1,6 +1,0 @@
-apiVersion: storage.k8s.io/v1
-kind: StorageClass
-metadata:
-  namespace: tg-file-collector
-  name: local-tg-file-collector-storage
-provisioner: kubernetes.io/no-provisioner
