@@ -71,8 +71,8 @@ The workflow is triggered on every push to the `main` branch and when a new tag 
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/antonleliuk/tg_file_collector.git
-   cd tg_file_collector
+   git clone https://github.com/antonleliuk/tg-file-collector.git
+   cd tg-file-collector
    ```
 
 2. Create a `my-values.yaml` file with your configuration:
@@ -100,7 +100,7 @@ The workflow is triggered on every push to the `main` branch and when a new tag 
 ### Method 2: Installing from GitHub (OCI Registry)
 
 ```bash
-helm install tg-file-collector oci://ghcr.io/antonleliuk/charts/tg_file_collector \
+helm install tg-file-collector oci://ghcr.io/antonleliuk/charts/tg-file-collector \
   --version 0.0.1 \
   -f my-values.yaml \
   -n tg-file-collector --create-namespace

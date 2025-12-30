@@ -2,9 +2,9 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "tg_file_collector.fullname" . }}
+  name: {{ include "tg-file-collector.fullname" . }}
   labels:
-    {{- include "tg_file_collector.labels" . | nindent 4 }}
+    {{- include "tg-file-collector.labels" . | nindent 4 }}
 spec:
   accessModes:
     - {{ .Values.persistence.accessMode | quote }}
