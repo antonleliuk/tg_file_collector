@@ -44,6 +44,18 @@ kubectl create secret generic tg-file-collector-bot-token \
 ```
 Then set `config.telegrambots.security.existingSecret: tg-file-collector-bot-token` in your `values.yaml`.
 
+### 3. Telegram Bot API URL
+By default, the application is configured to connect to the `telegram-bot-api` sidecar service included in the Helm chart. If you are using an external Telegram Bot API server, you can override the URL settings in your `values.yaml`:
+
+```yaml
+config:
+  telegrambots:
+    telegramUrl:
+      schema: "https"
+      host: "api.telegram.org"
+      port: "443"
+```
+
 ## Installation
 
 ### GitHub Actions (CI/CD)
@@ -105,18 +117,3 @@ helm install tg-file-collector oci://ghcr.io/antonleliuk/charts/tg_file_collecto
 | `persistence.enabled`                       | Enable persistent storage for downloaded files    | `true`                            |
 | `persistence.size`                          | Size of the persistent volume                     | `10Gi`                            |
 | `persistence.storageClassName`              | Storage class for the PVC                         | `local-tg-file-collector-storage` |
-
-## Storage for k3s
-
-If you are using k3s, you might need to create a `PersistentVolume` and `StorageClass` manually if you don't use the default `local-path` provisioner. See the `infra/` directory for examples:
-
-```bash
-kubectl apply -f infra/ns.yaml
-kubectl apply -f infra/sc.yaml
-kubectl apply -f infra/pv.yaml
-```
-
-Make sure to label your node if you use the example `pv.yaml`:
-```bash
-kubectl label node <node-name> with-storage=true
-```
