@@ -10,7 +10,7 @@
     </parent>
     <groupId>io.github.antonleliuk</groupId>
     <artifactId>tgfilecollector</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <name>tg-file-collector</name>
     <description>Telegram File Collector</description>
     <url/>

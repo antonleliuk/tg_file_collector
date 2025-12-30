@@ -32,6 +32,37 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- if .Values.telegramBotApi.enabled }}
       initContainers:
+        - name: telegram-bot-api
+          image: "{{ .Values.telegramBotApi.image.repository }}:{{ .Values.telegramBotApi.image.tag }}"
+          imagePullPolicy: {{ .Values.telegramBotApi.image.pullPolicy }}
+          restartPolicy: Always
+          env:
+            {{- range $key, $value := .Values.telegramBotApi.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            - name: TELEGRAM_API_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (printf "%s-api-credentials" (include "tg-file-collector.fullname" .)) .Values.telegramBotApi.secret.existingSecret }}
+                  key: TELEGRAM_API_ID
+            - name: TELEGRAM_API_HASH
+              valueFrom:
+                secretKeyRef:
+                  name: {{ default (printf "%s-api-credentials" (include "tg-file-collector.fullname" .)) .Values.telegramBotApi.secret.existingSecret }}
+                  key: TELEGRAM_API_HASH
+          ports:
+            - name: api
+              containerPort: 8081
+              protocol: TCP
+            - name: stat
+              containerPort: 8082
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.telegramBotApi.resources | nindent 12 }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/telegram-bot-api
         - name: wait-for-api
           image: busybox:1.28
           command: ['sh', '-c', 'until nc -zv {{ include "tg-file-collector.fullname" . }}-api 8081; do echo waiting for telegram-bot-api; sleep 2; done']
@@ -80,38 +111,6 @@ spec:
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
-        {{- if .Values.telegramBotApi.enabled }}
-        - name: telegram-bot-api
-          image: "{{ .Values.telegramBotApi.image.repository }}:{{ .Values.telegramBotApi.image.tag }}"
-          imagePullPolicy: {{ .Values.telegramBotApi.image.pullPolicy }}
-          env:
-            {{- range $key, $value := .Values.telegramBotApi.env }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
-            {{- end }}
-            - name: TELEGRAM_API_ID
-              valueFrom:
-                secretKeyRef:
-                  name: {{ default (printf "%s-api-credentials" (include "tg-file-collector.fullname" .)) .Values.telegramBotApi.secret.existingSecret }}
-                  key: TELEGRAM_API_ID
-            - name: TELEGRAM_API_HASH
-              valueFrom:
-                secretKeyRef:
-                  name: {{ default (printf "%s-api-credentials" (include "tg-file-collector.fullname" .)) .Values.telegramBotApi.secret.existingSecret }}
-                  key: TELEGRAM_API_HASH
-          ports:
-            - name: api
-              containerPort: 8081
-              protocol: TCP
-            - name: stat
-              containerPort: 8082
-              protocol: TCP
-          resources:
-            {{- toYaml .Values.telegramBotApi.resources | nindent 12 }}
-          volumeMounts:
-            - name: data
-              mountPath: /var/lib/telegram-bot-api
-        {{- end }}
       volumes:
         - name: data
           persistentVolumeClaim:
