@@ -27,6 +27,7 @@ WORKDIR /app
 
 # Add a non-root user for better security
 # Install curl
+# hadolint ignore=DL3018
 RUN addgroup --system appgroup && adduser --system appuser --ingroup appgroup && apk add --no-cache curl
 
 # Set the user to the newly created non-root user
