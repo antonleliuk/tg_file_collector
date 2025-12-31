@@ -97,6 +97,9 @@ spec:
               value: {{ .Values.config.telegrambots.storage.telegramRootDir | quote }}
             - name: JAVA_OPTS
               value: {{ .Values.javaOpts | default "" | quote }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
