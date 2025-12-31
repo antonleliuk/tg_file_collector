@@ -10,7 +10,7 @@
     </parent>
     <groupId>io.github.antonleliuk</groupId>
     <artifactId>tgfilecollector</artifactId>
-    <version>0.0.11</version>
+    <version>0.0.12</version>
     <name>tg-file-collector</name>
     <description>Telegram File Collector</description>
     <url/>
@@ -50,6 +50,11 @@
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots-client</artifactId>
             <version>9.2.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
         <dependency>
