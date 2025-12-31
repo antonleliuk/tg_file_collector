@@ -62,7 +62,7 @@ spec:
             {{- toYaml .Values.telegramBotApi.resources | nindent 12 }}
           volumeMounts:
             - name: data
-              mountPath: /var/lib/telegram-bot-api
+              mountPath: {{ .Values.persistence.mountPath | quote }}
         - name: wait-for-api
           image: busybox:1.28
           command: ['sh', '-c', 'until nc -zv {{ .Values.config.telegrambots.telegramUrl.host }} {{ .Values.config.telegrambots.telegramUrl.port }}; do echo waiting for telegram-bot-api; sleep 2; done']
@@ -95,6 +95,8 @@ spec:
               value: {{ .Values.config.telegrambots.storage.rootDir | quote }}
             - name: TELEGRAMBOTS_STORAGE_TELEGRAM_ROOT_DIR
               value: {{ .Values.config.telegrambots.storage.telegramRootDir | quote }}
+            - name: JAVA_OPTS
+              value: {{ .Values.javaOpts | default "" | quote }}
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}
@@ -107,7 +109,7 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: data
-              mountPath: /var/lib/telegram-bot-api
+              mountPath: {{ .Values.persistence.mountPath | quote }}
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
