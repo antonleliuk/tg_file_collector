@@ -120,7 +120,7 @@ The workflow is triggered on every push to the `main` branch and when a new tag 
 
 ```bash
 helm install tg-file-collector oci://ghcr.io/antonleliuk/charts/tg-file-collector \
-  --version 0.0.8 \
+  --version 0.0.9 \
   -f my-values.yaml \
   -n family-files-space --create-namespace
 ```
