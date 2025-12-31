@@ -108,6 +108,11 @@ resources:
 # JVM Options for the application
 javaOpts: ""
 
+# Additional environment variables for the application container
+extraEnv: []
+# - name: MY_VARIABLE
+#   value: "my-value"
+
 livenessProbe:
   httpGet:
     path: /actuator/health/liveness
