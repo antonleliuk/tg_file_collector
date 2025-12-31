@@ -42,4 +42,4 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 CMD curl 
 EXPOSE 8080
 
 # Define the entry point
-ENTRYPOINT ["java", "-jar", "application.jar"]
+ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar application.jar"]
