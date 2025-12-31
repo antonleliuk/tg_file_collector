@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/antonleliuk/tg-file-collector
+  repository: ghcr.io/antonleliuk/tg_file_collector
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.6"
+  tag: "0.0.8"
 
 telegramBotApi:
   enabled: true
@@ -44,9 +44,10 @@ config:
 persistence:
   existingClaim: "local-family-files-pvc"
 
-imagePullSecrets:
-  # - name: ghcr-pull-secret
-  []
+imagePullSecrets: []
+# Example:
+# imagePullSecrets:
+#   - name: ghcr-pull-secret
 nameOverride: ""
 fullnameOverride: ""
 
