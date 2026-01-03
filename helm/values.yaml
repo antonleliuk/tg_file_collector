@@ -42,12 +42,12 @@ config:
       port: "8081"
       testServer: "false"
     storage:
-      rootDir: "/var/lib/telegram-bot-api/files"
-      telegramRootDir: "/var/lib/telegram-bot-api"
+      rootDir: "/data/files"
+      telegramRootDir: "/data/files"
 
 persistence:
   existingClaim: "local-family-files-pvc"
-  mountPath: "/var/lib/telegram-bot-api"
+  mountPath: "/data/files"
 
 imagePullSecrets: []
 # Example:
