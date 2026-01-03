@@ -2,7 +2,9 @@ services:
   tg-bot-api:
     image: aiogram/telegram-bot-api:9.2
     container_name: tg-bot-api
+    command: ["sh", "-c", "umask 0002 && exec telegram-bot-api --dir=/var/lib/telegram-bot-api --local --http-port=8081 --http-stat-port=8082"]
     env_file: .env
+    user: "0:1000"
     volumes:
       - ${HOST_PATH}:/var/lib/telegram-bot-api
     ports:

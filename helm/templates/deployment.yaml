@@ -35,6 +35,7 @@ spec:
         - name: telegram-bot-api
           image: "{{ .Values.telegramBotApi.image.repository }}:{{ .Values.telegramBotApi.image.tag }}"
           imagePullPolicy: {{ .Values.telegramBotApi.image.pullPolicy }}
+          command: ["sh", "-c", "umask 0002 && exec telegram-bot-api --dir={{ .Values.persistence.mountPath }} --http-port={{ .Values.config.telegrambots.telegramUrl.port }} --local --http-stat-port=8082"]
           restartPolicy: Always
           {{- with .Values.telegramBotApi.securityContext }}
           securityContext:
@@ -62,14 +63,15 @@ spec:
             - name: stat
               containerPort: 8082
               protocol: TCP
-          resources:
-            {{- toYaml .Values.telegramBotApi.resources | nindent 12 }}
+          startupProbe:
+            tcpSocket:
+              port: api
+            initialDelaySeconds: 1
+            periodSeconds: 2
+            failureThreshold: 30
           volumeMounts:
             - name: data
               mountPath: {{ .Values.persistence.mountPath | quote }}
-        - name: wait-for-api
-          image: busybox:1.28
-          command: ['sh', '-c', 'until nc -zv {{ .Values.config.telegrambots.telegramUrl.host }} {{ .Values.config.telegrambots.telegramUrl.port }}; do echo waiting for telegram-bot-api; sleep 2; done']
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
