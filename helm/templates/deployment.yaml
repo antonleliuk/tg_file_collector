@@ -36,6 +36,10 @@ spec:
           image: "{{ .Values.telegramBotApi.image.repository }}:{{ .Values.telegramBotApi.image.tag }}"
           imagePullPolicy: {{ .Values.telegramBotApi.image.pullPolicy }}
           restartPolicy: Always
+          {{- with .Values.telegramBotApi.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           env:
             {{- range $key, $value := .Values.telegramBotApi.env }}
             - name: {{ $key }}

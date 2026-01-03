@@ -21,7 +21,9 @@ public class StorageService {
 
     @SneakyThrows
     public String save(String sourceFilePath, String fileName) {
+        log.debug("Source file path: {}", sourceFilePath);
         Path source = Path.of(sourceFilePath.replaceAll(telegramProperties.getStorage().getTelegramRootDir(), telegramProperties.getStorage().getRootDir()));
+        log.debug("Replaced source file path: {}", source);
         Path target = Paths.get(telegramProperties.getStorage().getRootDir(), "media", fileName);
         log.debug("Creating directory if not exists: {}", target.getParent());
         Files.createDirectories(target.getParent());

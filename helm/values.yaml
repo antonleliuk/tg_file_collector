@@ -8,7 +8,7 @@ image:
   repository: ghcr.io/antonleliuk/tg_file_collector
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.13"
+  tag: "0.0.14"
 
 telegramBotApi:
   enabled: true
@@ -23,6 +23,10 @@ telegramBotApi:
     apiId: ""
     apiHash: ""
     existingSecret: ""
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
   resources: {}
 
 config:
@@ -38,12 +42,12 @@ config:
       port: "8081"
       testServer: "false"
     storage:
-      rootDir: "/var/lib/telegram-bot-api/files"
-      telegramRootDir: "/var/lib/telegram-bot-api"
+      rootDir: "/data/files"
+      telegramRootDir: "/data/files"
 
 persistence:
   existingClaim: "local-family-files-pvc"
-  mountPath: "/var/lib/telegram-bot-api"
+  mountPath: "/data/files"
 
 imagePullSecrets: []
 # Example:
@@ -67,7 +71,9 @@ podAnnotations: {}
 podLabels: {}
 
 podSecurityContext:
-  fsGroup: 2000
+  runAsUser: 1000
+  fsGroup: 1000
+  runAsGroup: 1000
 
 securityContext: {}
   # capabilities:
