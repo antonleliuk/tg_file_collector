@@ -42,7 +42,7 @@
         <dependency>
             <groupId>org.telegram</groupId>
             <artifactId>telegrambots-springboot-longpolling-starter</artifactId>
-            <version>9.2.0</version>
+            <version>9.2.1</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.telegram/telegrambots-client -->
